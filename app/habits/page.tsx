@@ -46,8 +46,8 @@ export default function HabitsPage() {
 
   const fetchHabits = async () => {
     try {
-      const res = await fetch('/api/habits').catch(() => ({ ok: false }))
-      if (res.ok) {
+      const res = await fetch('/api/habits').catch(() => null)
+      if (res && res.ok) {
         const data = await res.json()
         setHabits(data.habits || [])
       } else {
@@ -74,9 +74,9 @@ export default function HabitsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newHabit),
-      }).catch(() => ({ ok: false }))
+      }).catch(() => null)
 
-      if (res.ok) {
+      if (res && res.ok) {
         toast.success('Habit created! 🎉')
         setShowCreateModal(false)
         setNewHabit({ title: '', description: '', type: 'daily', difficulty: 'easy' })
@@ -115,9 +115,9 @@ export default function HabitsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ habitId }),
-      }).catch(() => ({ ok: false }))
+      }).catch(() => null)
 
-      if (res.ok) {
+      if (res && res.ok) {
         toast.success('Tiny win unlocked! 🎉')
         fetchHabits()
       } else {

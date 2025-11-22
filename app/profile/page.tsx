@@ -44,10 +44,10 @@ export default function ProfilePage() {
   const fetchStats = async () => {
     try {
       const [streaksRes, habitsRes, coursesRes, badgesRes] = await Promise.all([
-        fetch('/api/streaks').catch(() => ({ ok: false })),
-        fetch('/api/habits').catch(() => ({ ok: false })),
-        fetch('/api/courses/enrolled').catch(() => ({ ok: false })),
-        fetch('/api/badges').catch(() => ({ ok: false })),
+        fetch('/api/streaks').catch(() => null),
+        fetch('/api/habits').catch(() => null),
+        fetch('/api/courses/enrolled').catch(() => null),
+        fetch('/api/badges').catch(() => null),
       ])
 
       let streak = 0
@@ -55,7 +55,7 @@ export default function ProfilePage() {
       let courses = 0
       let badges = 0
 
-      if (streaksRes.ok) {
+      if (streaksRes && streaksRes.ok) {
         const data = await streaksRes.json()
         streak = data.streaks?.[0]?.count || 0
       } else {
@@ -63,7 +63,7 @@ export default function ProfilePage() {
         streak = mockStreaks[0]?.count || 0
       }
 
-      if (habitsRes.ok) {
+      if (habitsRes && habitsRes.ok) {
         const data = await habitsRes.json()
         habits = data.habits?.length || 0
       } else {
@@ -71,14 +71,14 @@ export default function ProfilePage() {
         habits = mockHabits.length
       }
 
-      if (coursesRes.ok) {
+      if (coursesRes && coursesRes.ok) {
         const data = await coursesRes.json()
         courses = data.courses?.length || 0
       } else {
         courses = 0 // No enrolled courses in demo
       }
 
-      if (badgesRes.ok) {
+      if (badgesRes && badgesRes.ok) {
         const data = await badgesRes.json()
         badges = data.badges?.length || 0
       } else {

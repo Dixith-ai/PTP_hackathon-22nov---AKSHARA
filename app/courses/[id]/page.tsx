@@ -52,8 +52,8 @@ export default function CourseDetailsPage() {
 
   const fetchCourse = async () => {
     try {
-      const res = await fetch(`/api/courses/${params.id}`).catch(() => ({ ok: false }))
-      if (res.ok) {
+      const res = await fetch(`/api/courses/${params.id}`).catch(() => null)
+      if (res && res.ok) {
         const data = await res.json()
         setCourse(data.course)
       } else {
@@ -74,8 +74,8 @@ export default function CourseDetailsPage() {
   const checkEnrollment = async () => {
     if (!user) return
     try {
-      const res = await fetch(`/api/courses/${params.id}/enrollment`).catch(() => ({ ok: false }))
-      if (res.ok) {
+      const res = await fetch(`/api/courses/${params.id}/enrollment`).catch(() => null)
+      if (res && res.ok) {
         const data = await res.json()
         setIsEnrolled(data.enrolled)
       } else {
@@ -92,9 +92,9 @@ export default function CourseDetailsPage() {
     try {
       const res = await fetch(`/api/courses/${params.id}/enroll`, {
         method: 'POST',
-      }).catch(() => ({ ok: false }))
+      }).catch(() => null)
 
-      if (res.ok) {
+      if (res && res.ok) {
         toast.success('Enrolled successfully! 🎉')
         setIsEnrolled(true)
         setShowEnrollModal(false)

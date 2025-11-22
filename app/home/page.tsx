@@ -47,12 +47,12 @@ export default function HomePage() {
   const fetchData = async () => {
     try {
       const [habitsRes, streaksRes, moodRes] = await Promise.all([
-        fetch('/api/habits').catch(() => ({ ok: false })),
-        fetch('/api/streaks').catch(() => ({ ok: false })),
-        fetch('/api/emotions/latest').catch(() => ({ ok: false })),
+        fetch('/api/habits').catch(() => null),
+        fetch('/api/streaks').catch(() => null),
+        fetch('/api/emotions/latest').catch(() => null),
       ])
 
-      if (habitsRes.ok) {
+      if (habitsRes && habitsRes.ok) {
         const habitsData = await habitsRes.json()
         setHabits(habitsData.habits || [])
       } else {
@@ -61,7 +61,7 @@ export default function HomePage() {
         setHabits(mockHabits)
       }
 
-      if (streaksRes.ok) {
+      if (streaksRes && streaksRes.ok) {
         const streaksData = await streaksRes.json()
         setStreaks(streaksData.streaks || [])
       } else {
@@ -70,7 +70,7 @@ export default function HomePage() {
         setStreaks(mockStreaks)
       }
 
-      if (moodRes.ok) {
+      if (moodRes && moodRes.ok) {
         const moodData = await moodRes.json()
         setCurrentMood(moodData.mood)
       }
@@ -89,9 +89,9 @@ export default function HomePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ habitId }),
-      }).catch(() => ({ ok: false }))
+      }).catch(() => null)
 
-      if (res.ok) {
+      if (res && res.ok) {
         toast.success('Tiny win unlocked! 🎉')
         fetchData()
       } else {

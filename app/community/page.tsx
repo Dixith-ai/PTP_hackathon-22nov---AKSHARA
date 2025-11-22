@@ -49,8 +49,8 @@ export default function CommunityPage() {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch('/api/community/posts').catch(() => ({ ok: false }))
-      if (res.ok) {
+      const res = await fetch('/api/community/posts').catch(() => null)
+      if (res && res.ok) {
         const data = await res.json()
         setPosts(data.posts || [])
       } else {
@@ -77,9 +77,9 @@ export default function CommunityPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPost),
-      }).catch(() => ({ ok: false }))
+      }).catch(() => null)
 
-      if (res.ok) {
+      if (res && res.ok) {
         toast.success('Post created! 🎉')
         setShowCreateModal(false)
         setNewPost({ title: '', content: '', type: 'discussion' })

@@ -41,8 +41,8 @@ export default function CoursesPage() {
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch('/api/courses').catch(() => ({ ok: false }))
-      if (res.ok) {
+      const res = await fetch('/api/courses').catch(() => null)
+      if (res && res.ok) {
         const data = await res.json()
         setCourses(data.courses || [])
       } else {
