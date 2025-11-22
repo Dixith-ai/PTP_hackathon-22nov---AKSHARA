@@ -18,8 +18,8 @@ interface ApiResponse<T> {
 // Generic API wrapper that falls back to mock data
 async function apiCall<T>(
   endpoint: string,
-  options?: RequestInit,
-  mockData: T
+  mockData: T,
+  options?: RequestInit
 ): Promise<{ ok: boolean; data: T }> {
   try {
     const response = await fetch(endpoint, {
@@ -47,7 +47,7 @@ async function apiCall<T>(
 // API functions with mock fallbacks
 export const api = {
   // Habits
-  getHabits: () => apiCall('/api/habits', {}, { habits: mockHabits }),
+  getHabits: () => apiCall('/api/habits', { habits: mockHabits }, {}),
   createHabit: (habit: any) => {
     const newHabit = {
       ...habit,
@@ -55,30 +55,30 @@ export const api = {
       isActive: true,
       completions: [],
     }
-    return apiCall('/api/habits', {
+    return apiCall('/api/habits', { habit: newHabit }, {
       method: 'POST',
       body: JSON.stringify(habit),
-    }, { habit: newHabit })
+    })
   },
   completeHabit: (habitId: string) => 
-    apiCall('/api/habits/complete', {
+    apiCall('/api/habits/complete', { success: true }, {
       method: 'POST',
       body: JSON.stringify({ habitId }),
-    }, { success: true }),
+    }),
 
   // Streaks
-  getStreaks: () => apiCall('/api/streaks', {}, { streaks: mockStreaks }),
+  getStreaks: () => apiCall('/api/streaks', { streaks: mockStreaks }, {}),
 
   // Courses
-  getCourses: () => apiCall('/api/courses', {}, { courses: mockCourses }),
+  getCourses: () => apiCall('/api/courses', { courses: mockCourses }, {}),
   getCourse: (id: string) => {
     const course = mockCourses.find(c => c.id === id) || mockCourses[0]
-    return apiCall(`/api/courses/${id}`, {}, { course })
+    return apiCall(`/api/courses/${id}`, { course }, {})
   },
-  getEnrolledCourses: () => apiCall('/api/courses/enrolled', {}, { courses: [] }),
+  getEnrolledCourses: () => apiCall('/api/courses/enrolled', { courses: [] }, {}),
 
   // Community
-  getPosts: () => apiCall('/api/community/posts', {}, { posts: mockPosts }),
+  getPosts: () => apiCall('/api/community/posts', { posts: mockPosts }, {}),
   createPost: (post: any) => {
     const newPost = {
       ...post,
@@ -89,38 +89,38 @@ export const api = {
       reactions: [],
       comments: [],
     }
-    return apiCall('/api/community/posts', {
+    return apiCall('/api/community/posts', { post: newPost }, {
       method: 'POST',
       body: JSON.stringify(post),
-    }, { post: newPost })
+    })
   },
   reactToPost: (postId: string, type: string) =>
-    apiCall(`/api/community/posts/${postId}/reaction`, {
+    apiCall(`/api/community/posts/${postId}/reaction`, { success: true }, {
       method: 'POST',
       body: JSON.stringify({ type }),
-    }, { success: true }),
+    }),
 
   // Emotions
-  getLatestEmotion: () => apiCall('/api/emotions/latest', {}, { mood: mockEmotions.mood }),
+  getLatestEmotion: () => apiCall('/api/emotions/latest', { mood: mockEmotions.mood }, {}),
   createEmotion: (emotion: any) =>
-    apiCall('/api/emotions', {
+    apiCall('/api/emotions', { success: true }, {
       method: 'POST',
       body: JSON.stringify(emotion),
-    }, { success: true }),
+    }),
 
   // Badges
-  getBadges: () => apiCall('/api/badges', {}, { badges: mockBadges }),
+  getBadges: () => apiCall('/api/badges', { badges: mockBadges }, {}),
 
   // User Profile
-  getProfile: () => apiCall('/api/user/profile', {}, {
+  getProfile: () => apiCall('/api/user/profile', {
     name: 'Demo User',
     username: 'demo',
     bio: 'Learning and growing every day!',
-  }),
+  }, {}),
   updateProfile: (profile: any) =>
-    apiCall('/api/user/profile', {
+    apiCall('/api/user/profile', { success: true }, {
       method: 'PUT',
       body: JSON.stringify(profile),
-    }, { success: true }),
+    }),
 }
 
