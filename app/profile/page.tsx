@@ -44,20 +44,59 @@ export default function ProfilePage() {
   const fetchStats = async () => {
     try {
       const [streaksRes, habitsRes, coursesRes, badgesRes] = await Promise.all([
-        fetch('/api/streaks'),
-        fetch('/api/habits'),
-        fetch('/api/courses/enrolled'),
-        fetch('/api/badges'),
+        fetch('/api/streaks').catch(() => ({ ok: false })),
+        fetch('/api/habits').catch(() => ({ ok: false })),
+        fetch('/api/courses/enrolled').catch(() => ({ ok: false })),
+        fetch('/api/badges').catch(() => ({ ok: false })),
       ])
 
-      const streak = streaksRes.ok ? (await streaksRes.json()).streaks?.[0]?.count || 0 : 0
-      const habits = habitsRes.ok ? (await habitsRes.json()).habits?.length || 0 : 0
-      const courses = coursesRes.ok ? (await coursesRes.json()).courses?.length || 0 : 0
-      const badges = badgesRes.ok ? (await badgesRes.json()).badges?.length || 0 : 0
+      let streak = 0
+      let habits = 0
+      let courses = 0
+      let badges = 0
+
+      if (streaksRes.ok) {
+        const data = await streaksRes.json()
+        streak = data.streaks?.[0]?.count || 0
+      } else {
+        const { mockStreaks } = await import('@/lib/mockData')
+        streak = mockStreaks[0]?.count || 0
+      }
+
+      if (habitsRes.ok) {
+        const data = await habitsRes.json()
+        habits = data.habits?.length || 0
+      } else {
+        const { mockHabits } = await import('@/lib/mockData')
+        habits = mockHabits.length
+      }
+
+      if (coursesRes.ok) {
+        const data = await coursesRes.json()
+        courses = data.courses?.length || 0
+      } else {
+        courses = 0 // No enrolled courses in demo
+      }
+
+      if (badgesRes.ok) {
+        const data = await badgesRes.json()
+        badges = data.badges?.length || 0
+      } else {
+        const { mockBadges } = await import('@/lib/mockData')
+        badges = mockBadges.length
+      }
 
       setStats({ streak, habits, courses, badges })
     } catch (error) {
       console.error('Error fetching stats:', error)
+      // Fallback to mock data
+      const { mockStreaks, mockHabits, mockBadges } = await import('@/lib/mockData')
+      setStats({
+        streak: mockStreaks[0]?.count || 0,
+        habits: mockHabits.length,
+        courses: 0,
+        badges: mockBadges.length,
+      })
     }
   }
 

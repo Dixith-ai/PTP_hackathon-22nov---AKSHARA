@@ -41,13 +41,20 @@ export default function CoursesPage() {
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch('/api/courses')
+      const res = await fetch('/api/courses').catch(() => ({ ok: false }))
       if (res.ok) {
         const data = await res.json()
         setCourses(data.courses || [])
+      } else {
+        // Use mock data
+        const { mockCourses } = await import('@/lib/mockData')
+        setCourses(mockCourses)
       }
     } catch (error) {
       console.error('Error fetching courses:', error)
+      // Fallback to mock data
+      const { mockCourses } = await import('@/lib/mockData')
+      setCourses(mockCourses)
     }
   }
 

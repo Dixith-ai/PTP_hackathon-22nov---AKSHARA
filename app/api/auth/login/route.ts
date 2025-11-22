@@ -24,13 +24,28 @@ export async function POST(req: NextRequest) {
       const nameFromEmail = email.split('@')[0] || 'User'
       const capitalizedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1)
 
-      user = await prisma.user.create({
-        data: {
-          email,
-          name: capitalizedName,
-          password: null, // No password needed for free login
-        },
-      })
+      try {
+        user = await prisma.user.create({
+          data: {
+            email,
+            name: capitalizedName,
+            password: null, // No password needed for free login
+          },
+        })
+      } catch (dbError: any) {
+        // If database connection fails, provide helpful error
+        if (dbError.code === 'P1001' || dbError.message?.includes('connect')) {
+          console.error('Database connection error:', dbError)
+          return NextResponse.json(
+            { 
+              error: 'Database connection failed. Please check your DATABASE_URL environment variable.',
+              hint: 'For Vercel deployment, you need a cloud database like Turso (libsql) or PostgreSQL.'
+            },
+            { status: 503 }
+          )
+        }
+        throw dbError
+      }
     }
 
     // Set session cookie (simplified - in production use proper session management)
@@ -50,10 +65,18 @@ export async function POST(req: NextRequest) {
         username: user.username,
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error)
+    // Return more detailed error in development, generic in production
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error.message || 'Internal server error'
+      : 'Internal server error'
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     )
   }

@@ -47,19 +47,27 @@ export default function HomePage() {
   const fetchData = async () => {
     try {
       const [habitsRes, streaksRes, moodRes] = await Promise.all([
-        fetch('/api/habits'),
-        fetch('/api/streaks'),
-        fetch('/api/emotions/latest'),
+        fetch('/api/habits').catch(() => ({ ok: false })),
+        fetch('/api/streaks').catch(() => ({ ok: false })),
+        fetch('/api/emotions/latest').catch(() => ({ ok: false })),
       ])
 
       if (habitsRes.ok) {
         const habitsData = await habitsRes.json()
         setHabits(habitsData.habits || [])
+      } else {
+        // Use mock data
+        const { mockHabits } = await import('@/lib/mockData')
+        setHabits(mockHabits)
       }
 
       if (streaksRes.ok) {
         const streaksData = await streaksRes.json()
         setStreaks(streaksData.streaks || [])
+      } else {
+        // Use mock data
+        const { mockStreaks } = await import('@/lib/mockData')
+        setStreaks(mockStreaks)
       }
 
       if (moodRes.ok) {
@@ -68,6 +76,10 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error fetching data:', error)
+      // Fallback to mock data
+      const { mockHabits, mockStreaks } = await import('@/lib/mockData')
+      setHabits(mockHabits)
+      setStreaks(mockStreaks)
     }
   }
 
@@ -77,14 +89,20 @@ export default function HomePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ habitId }),
-      })
+      }).catch(() => ({ ok: false }))
 
       if (res.ok) {
         toast.success('Tiny win unlocked! 🎉')
         fetchData()
+      } else {
+        // Mock success in frontend-only mode
+        toast.success('Tiny win unlocked! 🎉 (Demo Mode)')
+        fetchData()
       }
     } catch (error) {
-      toast.error('Something went wrong')
+      // Mock success in frontend-only mode
+      toast.success('Tiny win unlocked! 🎉 (Demo Mode)')
+      fetchData()
     }
   }
 
