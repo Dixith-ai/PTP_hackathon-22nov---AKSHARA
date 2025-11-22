@@ -15,25 +15,35 @@ import {
   Heart,
   AlertCircle,
   Settings,
+  Sparkles,
+  MoreVertical,
+  ChevronDown,
 } from 'lucide-react'
 import { DoodleStar } from './Doodle'
 import Button from './ui/Button'
+import { useState } from 'react'
 
-const navItems = [
+// Primary navigation items (most used)
+const primaryNavItems = [
   { href: '/home', icon: Home, label: 'Home' },
+  { href: '/mood-vibe-check', icon: Sparkles, label: 'Mood & Vibe' },
   { href: '/courses', icon: BookOpen, label: 'Courses' },
-  { href: '/my-courses', icon: BookOpen, label: 'My Courses' },
-  { href: '/community', icon: Users, label: 'Community' },
   { href: '/habits', icon: Target, label: 'Habits' },
+  { href: '/community', icon: Users, label: 'Community' },
+]
+
+// Secondary navigation items (less frequently used)
+const secondaryNavItems = [
+  { href: '/my-courses', icon: BookOpen, label: 'My Courses' },
   { href: '/study-buddy', icon: Heart, label: 'Study Buddy' },
   { href: '/mistakes', icon: AlertCircle, label: 'Mistakes' },
-  { href: '/profile', icon: User, label: 'Profile' },
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const { user, setUser } = useAuth()
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -44,6 +54,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   if (!user) {
     return <>{children}</>
   }
+
+  const isActiveInSecondary = secondaryNavItems.some(item => pathname === item.href)
 
   return (
     <div className="min-h-screen bg-dark-bg flex">
@@ -57,7 +69,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Link>
 
         <nav className="flex-1 space-y-2">
-          {navItems.map((item) => {
+          {/* Primary Navigation */}
+          {primaryNavItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
             return (
@@ -77,6 +90,56 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             )
           })}
+
+          {/* More Menu */}
+          <div className="relative pt-2">
+            <button
+              onClick={() => setShowMoreMenu(!showMoreMenu)}
+              className={`
+                w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all
+                ${isActiveInSecondary || showMoreMenu
+                  ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/50'
+                  : 'text-gray-400 hover:text-white hover:bg-dark-card'
+                }
+              `}
+            >
+              <div className="flex items-center gap-3">
+                <MoreVertical size={20} />
+                <span className="font-medium">More</span>
+              </div>
+              <ChevronDown 
+                size={16} 
+                className={`transition-transform ${showMoreMenu ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showMoreMenu && (
+              <div className="mt-2 ml-4 space-y-1 border-l-2 border-dark-border pl-4">
+                {secondaryNavItems.map((item) => {
+                  const Icon = item.icon
+                  const isActive = pathname === item.href
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setShowMoreMenu(false)}
+                      className={`
+                        flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm
+                        ${isActive
+                          ? 'bg-neon-purple/20 text-neon-purple'
+                          : 'text-gray-400 hover:text-white hover:bg-dark-card'
+                        }
+                      `}
+                    >
+                      <Icon size={18} />
+                      <span>{item.label}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </nav>
 
         <div className="space-y-2">
