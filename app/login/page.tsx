@@ -19,13 +19,19 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!email) {
+      toast.error('Please enter an email')
+      return
+    }
+    
     setLoading(true)
 
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password: password || 'any' }),
       })
 
       const data = await res.json()
@@ -77,10 +83,9 @@ export default function LoginPage() {
           <Input
             type="password"
             label="Password"
-            placeholder="••••••••"
+            placeholder="Enter any password (optional)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
 
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>

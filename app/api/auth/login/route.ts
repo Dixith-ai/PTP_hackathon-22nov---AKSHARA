@@ -1,34 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserByEmail, verifyPassword } from '@/lib/auth'
+import { getUserByEmail } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
 
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json()
 
-    if (!email || !password) {
+    // Only require email, password is optional for free login
+    if (!email) {
       return NextResponse.json(
-        { error: 'Email and password required' },
+        { error: 'Email required' },
         { status: 400 }
       )
     }
 
-    const user = await getUserByEmail(email)
+    // Try to find existing user
+    let user = await getUserByEmail(email)
 
-    if (!user || !user.password) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      )
-    }
+    // If user doesn't exist, create a new one
+    if (!user) {
+      // Extract name from email (part before @) or use default
+      const nameFromEmail = email.split('@')[0] || 'User'
+      const capitalizedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1)
 
-    const isValid = await verifyPassword(password, user.password)
-
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      )
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: capitalizedName,
+          password: null, // No password needed for free login
+        },
+      })
     }
 
     // Set session cookie (simplified - in production use proper session management)
@@ -49,6 +51,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
+    console.error('Login error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
