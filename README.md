@@ -1,152 +1,111 @@
-# AKSHARA - Your Learning Companion
+# AKSHARA
 
-A warm, playful, futuristic learning platform that makes studying feel less lonely, less stressful, and more joyful — one small win at a time.
+A calm, neon-lit learning companion built with Next.js 14. AKSHARA blends structured courses, mood-aware planning, and supportive community tools to make studying feel intentional, social, and sustainable.
 
-## ✨ Features
+## Highlights
 
-- **Tiny Daily Habits** - Build consistency with small, achievable wins
-- **Mood-Aware Learning** - Get task suggestions that match your energy
-- **Course System** - Browse, enroll, and learn from structured courses
-- **Community** - Share wins, ask questions, and support each other
-- **Streak Tracking** - Stay motivated with visual progress tracking
-- **Emotion Check-ins** - Track your mood and get personalized suggestions
-- **Study Buddies** - Find your perfect learning partner
-- **Class Replay Notes** - Take and save notes as you learn
+- **Mood & Vibe Check-In** – Generate a personalized study plan by selecting your current mood, desired vibe, time budget, and subjects.
+- **Study Buddy Matching** – Swipe through curated buddy profiles, match, and keep a lightweight roster of partners who fit your learning energy.
+- **Habit Engine** – Design daily or weekly micro-habits, complete them in one tap, and maintain streaks.
+- **Course Hub** – Browse, enroll, and progress through curated courses with onboarding, lessons, and notes.
+- **Community Pulse** – Share wins, ask questions, react, and stay accountable with friendly peers.
 
-## 🚀 Getting Started
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **UI**: React 18, Tailwind CSS, Framer Motion, Lucide Icons
+- **State**: Zustand + React Context
+- **Data Layer**: Prisma ORM (SQLite locally, bring-your-own DATABASE_URL for production)
+- **Auth**: Cookie-backed session handling with simplified demo login
+
+## Getting Started
 
 ### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
+- Node.js 18+
+- npm (or another Node package manager)
 
 ### Installation
-
-1. Install dependencies:
 ```bash
 npm install
-```
-
-2. Set up the database:
-```bash
 npx prisma generate
-npx prisma db push
-```
-
-3. Seed the database (optional):
-```bash
-npm run db:seed
-```
-
-4. Start the development server:
-```bash
 npm run dev
 ```
 
-Or use the dev script that auto-opens the browser:
-```bash
-node scripts/dev-with-open.js
+Visit `http://localhost:3000` after the dev server boots.
+
+### Environment
+
+| Variable       | Purpose                                    |
+| -------------- | ------------------------------------------ |
+| `DATABASE_URL` | Prisma connection string (SQLite or remote) |
+
+If no `DATABASE_URL` is provided, the app defaults to `file:./prisma/dev.db` for local development. For serverless deployment (Vercel, Netlify), point this variable to a remote database (Turso, PostgreSQL, etc.).
+
+### Useful Scripts
+
+| Command              | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `npm run dev`        | Start Next.js in development mode            |
+| `npm run build`      | Create an optimized production build         |
+| `npm run start`      | Run the production server                    |
+| `npm run lint`       | Lint the codebase with ESLint                |
+| `npm run db:push`    | Push Prisma schema changes to the database   |
+| `npm run db:studio`  | Launch Prisma Studio                         |
+| `npm run db:seed`    | Seed the database with sample data           |
+
+## Project Layout
+
+```
+app/
+  api/              → Route handlers (auth, courses, habits, etc.)
+  home/             → Dashboard experience
+  mood-vibe-check/  → Mood-driven plan generator
+  study-buddy/      → Matching interface
+  community/        → Social feed
+  ...
+components/
+  ui/               → Buttons, cards, inputs, badges, modal primitives
+  Layout.tsx        → Sidebar navigation + app shell
+lib/
+  auth.ts           → User lookup helpers
+  prisma.ts         → Prisma client bootstrap
+  utils.ts          → Shared helpers (compatibility scoring, etc.)
+prisma/
+  schema.prisma     → Database schema
+  seed.ts           → Demo seed script
+scripts/
+  dev-with-open.js  → Dev server + auto-open browser helper
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+## Key Experiences
 
-### Default Test Account
+### Mood & Vibe Check-In
+- Clients-only workflow with local mock data fallback.
+- Generates a structured plan (lessons, breaks, intensity, schedule) from mood, vibe, time, and optional subjects.
+- Provides a “Today’s Study Schedule” recap with stats and next steps.
 
-- Email: `test@akshara.com`
-- Password: `password123`
+### Study Buddy Matching
+- Swipeable card deck powered by Framer Motion drag gestures.
+- Matches produce a lightweight summary object and append to a glowing roster.
+- Empty states, refresh controls, and match success overlays keep the flow engaging even without a backend.
 
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 14 (App Router)
-- **Database**: SQLite with Prisma ORM
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **State Management**: Zustand
-- **Notifications**: React Hot Toast
-
-## 📁 Project Structure
-
-```
-├── app/                    # Next.js app directory
-│   ├── api/               # API routes
-│   ├── home/              # Home dashboard
-│   ├── courses/           # Course pages
-│   ├── community/         # Community feed
-│   ├── habits/            # Habit tracking
-│   ├── profile/           # User profile
-│   └── ...
-├── components/            # React components
-│   ├── ui/                # Reusable UI components
-│   └── ...
-├── lib/                   # Utility functions
-├── prisma/                # Database schema and migrations
-└── public/                # Static assets
-```
-
-## 🎨 Design System
-
-AKSHARA uses a dark-first design with warm neon accents:
-
-- **Colors**: Dark backgrounds with neon pink, purple, blue, cyan, green, and yellow accents
-- **Typography**: Modern, energetic fonts
-- **Animations**: Smooth, friendly micro-interactions
-- **Voice**: Warm, playful, and supportive
-
-## 📝 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run db:push` - Push schema changes to database
-- `npm run db:studio` - Open Prisma Studio
-- `npm run db:seed` - Seed the database
-
-## 🔐 Authentication
-
-The app uses cookie-based session management. Users can:
-- Sign up with email and password
-- Log in to access their dashboard
-- Complete onboarding to personalize their experience
-
-## 📚 Key Features Explained
-
-### Habits System
-- Create daily, weekly, or custom habits
-- Track completions and build streaks
-- Visual progress indicators
-
-### Emotion Tracking
-- Check in with your mood daily
-- Get personalized task suggestions based on energy level
-- Track emotional patterns over time
-
-### Course Learning
-- Browse courses by category and difficulty
-- Enroll in courses and track progress
-- Take notes during lessons
-- Complete lessons and advance through courses
+### Courses & Habits
+- Courses include onboarding, enrollment, lessons, note-taking, and progress tracking endpoints under `app/api/courses`.
+- Habits and streak tracking flow through `app/api/habits` and `app/api/streaks`, with quick-complete actions surfaced on the home dashboard.
 
 ### Community
-- Share posts, questions, and wins
-- React to posts with likes
-- Support and encourage each other
+- Lightweight posts, reactions, and notifications accessible under `/community`.
+- API routes support sharing updates, reacting, and marking notifications read.
 
-## 🎯 Roadmap
+## Deployment Notes
 
-- [ ] Study Buddy matching algorithm
-- [ ] AI-powered note summaries
-- [ ] Mistake pattern insights
-- [ ] Advanced analytics
-- [ ] Mobile app
+- The app is optimized for a front-end-first experience. When no backend is available, it gracefully falls back to mock data for authentication, mood planning, and buddy matching.
+- For production deployments (e.g., Vercel), configure `DATABASE_URL` to a persistent database. Ensure Prisma migrations/seeds run prior to `npm run start`.
 
-## 📄 License
+## License
 
-This project is built for the PTP Hackathon.
+This project was created for the PTP Hackathon and is provided as-is for learning and experimentation.
 
-## 💝 Made with
+---
 
-Built with love, neon colors, and lots of coffee ☕
-
-
+Crafted to make focused study sessions feel modern, social, and encouraging—even on the days when motivation needs a spark.
